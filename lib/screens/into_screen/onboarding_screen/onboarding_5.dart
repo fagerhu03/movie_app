@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_4.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -48,7 +49,9 @@ class Onboarding5 extends StatelessWidget {
                     width: double.infinity,
                     height: 55.h,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFFC107),
                         foregroundColor: Colors.black,

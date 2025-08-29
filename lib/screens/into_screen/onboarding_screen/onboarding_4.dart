@@ -4,7 +4,6 @@ import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_3.dar
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_5.dart';
 
 import '../../../core/theme/app_colors.dart';
-import 'onboarding_2.dart';
 
 class Onboarding4 extends StatelessWidget {
   const Onboarding4({super.key});

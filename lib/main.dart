@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:movie_app/screens/into_screen/intro.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_1.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_2.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: IntroScreen.routeName,
         routes: {
+
           //intro
           IntroScreen.routeName: (_) => IntroScreen(),
           Onboarding1.routeName: (_) => Onboarding1(),
@@ -31,6 +33,9 @@ class MyApp extends StatelessWidget {
           Onboarding3.routeName: (_) => Onboarding3(),
           Onboarding4.routeName: (_) => Onboarding4(),
           Onboarding5.routeName: (_) => Onboarding5(),
+
+          //auth
+          LoginScreen.routeName: (_) => LoginScreen(),
 
       
         },
