@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_app/screens/into_screen/intro.dart';
+import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_1.dart';
+import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_2.dart';
+import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_3.dart';
+import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_4.dart';
+import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_5.dart';
 import 'core/theme/theme.dart';
 
 
@@ -12,16 +18,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: IntroScreen.routeName,
-      routes: {
-        IntroScreen.routeName: (_) => IntroScreen(),
+    return ScreenUtilInit(
+      designSize: const Size(430, 932),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: IntroScreen.routeName,
+        routes: {
+          //intro
+          IntroScreen.routeName: (_) => IntroScreen(),
+          Onboarding1.routeName: (_) => Onboarding1(),
+          Onboarding2.routeName: (_) => Onboarding2(),
+          Onboarding3.routeName: (_) => Onboarding3(),
+          Onboarding4.routeName: (_) => Onboarding4(),
+          Onboarding5.routeName: (_) => Onboarding5(),
 
-
-      },
-      theme: AppTheme.dark(),
-
+      
+        },
+        theme: AppTheme.dark(),
+      
+      ),
     );
   }
 }
