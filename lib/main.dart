@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:movie_app/screens/auth_screen/forget_password_screen.dart';
 import 'package:movie_app/screens/auth_screen/login_screen.dart';
+import 'package:movie_app/screens/auth_screen/register_screen.dart';
 import 'package:movie_app/screens/into_screen/intro.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_1.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_2.dart';
@@ -9,8 +11,7 @@ import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_4.dar
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_5.dart';
 import 'core/theme/theme.dart';
 
-
-void main (){
+void main() {
   runApp(MyApp());
 }
 
@@ -25,7 +26,6 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: IntroScreen.routeName,
         routes: {
-
           //intro
           IntroScreen.routeName: (_) => IntroScreen(),
           Onboarding1.routeName: (_) => Onboarding1(),
@@ -36,11 +36,10 @@ class MyApp extends StatelessWidget {
 
           //auth
           LoginScreen.routeName: (_) => LoginScreen(),
-
-      
+          ForgotPasswordScreen.routeName: (_) => ForgotPasswordScreen(),
+          RegisterScreen.routeName: (_) => RegisterScreen(),
         },
         theme: AppTheme.dark(),
-      
       ),
     );
   }
