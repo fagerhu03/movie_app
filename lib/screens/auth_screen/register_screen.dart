@@ -358,14 +358,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _langChip(String asset, {String? tooltip}) {
-    return Tooltip(
-      message: tooltip ?? '',
-      child: CircleAvatar(
-        radius: 18.r,
-        backgroundColor: Colors.white24,
-        child: CircleAvatar(radius: 16.r, backgroundImage: AssetImage(asset)),
-      ),
-    );
-  }
+  // Widget _langChip(String asset, {String? tooltip}) {
+  //   return Tooltip(
+  //     message: tooltip ?? '',
+  //     child: CircleAvatar(
+  //       radius: 18.r,
+  //       backgroundColor: Colors.white24,
+  //       child: CircleAvatar(radius: 16.r, backgroundImage: AssetImage(asset)),
+  //     ),
+  //   );
+  // }
 }
