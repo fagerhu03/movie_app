@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'movie-app-69278.firebasestorage.app',
     iosBundleId: 'com.example.movieApp',
   );
+
 }

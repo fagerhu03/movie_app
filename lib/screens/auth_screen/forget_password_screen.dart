@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../domain/services/firebase_auth_service.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key, this.onVerify});
+   const ForgotPasswordScreen({super.key, this.onVerify});
 
   static const routeName = 'Forgotpassword';
-
   /// If you want to hook Firebase later, pass a callback:
   /// onVerify?.call(email)
   final void Function(String email)? onVerify;
@@ -15,6 +16,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _auth = FirebaseAuthService();
   final _emailCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   static const yellow = Color(0xFFFFC107);
@@ -94,14 +96,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       FocusScope.of(context).unfocus();
                       if (_formKey.currentState?.validate() ?? false) {
                         widget.onVerify?.call(_emailCtrl.text.trim());
-                        // You can also show a snackbar:
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(content: Text('Reset link sent (if email exists).')),
-                        // );
+                        await _auth.sendPasswordReset(_emailCtrl.text.trim());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('If the email exists, a reset link was sent.')),
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
