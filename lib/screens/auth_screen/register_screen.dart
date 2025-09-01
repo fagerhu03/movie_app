@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:random_avatar/random_avatar.dart';
 
-import '../../data/models/api_register_response.dart';
-import '../../data/models/register_model.dart';
+import '../../data/models/auth_model/api_model/api_register_response.dart';
+import '../../data/models/auth_model/register_model.dart';
 import '../../domain/services/auth_api_service.dart';
 
 class RegisterScreen extends StatefulWidget {
