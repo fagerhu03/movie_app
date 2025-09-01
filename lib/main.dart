@@ -5,12 +5,14 @@ import 'package:movie_app/screens/auth_screen/forget_password_screen.dart';
 import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:movie_app/screens/auth_screen/register_screen.dart';
 import 'package:movie_app/screens/home_screen/home_screen.dart';
+import 'package:movie_app/screens/home_screen/tabs/home_tab.dart';
 import 'package:movie_app/screens/into_screen/intro.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_1.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_2.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_3.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_4.dart';
 import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_5.dart';
+import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 import 'bootstrap.dart';
 import 'core/theme/theme.dart';
 
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(430, 932),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: IntroScreen.routeName,
+        initialRoute: HomeScreen.routeName,
         routes: {
           //intro
           IntroScreen.routeName: (_) => IntroScreen(),
@@ -46,6 +48,9 @@ class MyApp extends StatelessWidget {
 
           //home
           HomeScreen.routeName: (_) => HomeScreen(),
+          MovieDetailsScreen.routeName: (_) => MovieDetailsScreen(),
+          //tabs
+          HomeTab.routeName: (_) => HomeTab(),
 
         },
         theme: AppTheme.dark(),

@@ -1,14 +1,14 @@
 // lib/domain/services/auth_api_service.dart
 import 'package:dio/dio.dart';
 
-import '../../data/models/api_login_response..dart';
+import '../../data/models/auth_model/api_model/api_login_response..dart';
+import '../../data/models/auth_model/api_model/api_register_response.dart';
+import '../../data/models/auth_model/register_model.dart';
 import '../../data/network/api_client.dart';
 import '../../data/local/token_storage.dart';
 
-import '../../data/models/sign_in_model.dart';
-import '../../data/models/register_model.dart';
-// ✅ correct import (was ...response..dart)
-import '../../data/models/api_register_response.dart';
+import '../../data/models/auth_model/sign_in_model.dart';
+
 
 class AuthApiService {
   final ApiClient _client;

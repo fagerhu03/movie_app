@@ -1,4 +1,4 @@
-import 'api_user.dart';
+import '../api_user.dart';
 
 class ApiRegisterResponse {
   final String message;
