@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // <-- add this
 import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:random_avatar/random_avatar.dart';
 
+import '../../data/models/api_register_response.dart';
 import '../../data/models/register_model.dart';
-import '../../domain/services/firebase_auth_service.dart';
-import '../home_screen/home_screen.dart';
+import '../../domain/services/auth_api_service.dart';
 
 class RegisterScreen extends StatefulWidget {
-   RegisterScreen({super.key, this.onLoginTap, this.onSubmit});
+  const RegisterScreen({super.key, this.onLoginTap, this.onSubmit});
 
   final VoidCallback? onLoginTap;
   final void Function({
-    required String name,
-    required String email,
-    required String password,
-    required String phone,
-    required String avatarSeed,
-  })?
-  onSubmit;
+  required String name,
+  required String email,
+  required String password,
+  required String phone,
+  required String avatarSeed,
+  })? onSubmit;
 
   static const routeName = 'RegisterScreen';
-  final _auth = FirebaseAuthService();
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
-
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _nameCtrl = TextEditingController();
@@ -50,26 +47,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool _hidePass = true;
   bool _hideConfirm = true;
-  bool _loading = false; // <-- prevent double taps
-
-  // error mapper
-  String _authErrorToMessage(Object e) {
-    if (e is FirebaseAuthException) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          return 'This email is already registered. Try logging in instead.';
-        case 'invalid-email':
-          return 'The email address is badly formatted.';
-        case 'weak-password':
-          return 'Password is too weak. Use at least 6 characters.';
-        case 'network-request-failed':
-          return 'Network error. Check your internet connection.';
-        default:
-          return e.message ?? e.code;
-      }
-    }
-    return e.toString();
-  }
+  bool _loading = false;
 
   InputDecoration _dec(String hint, IconData icon, {Widget? suffix}) {
     return InputDecoration(
@@ -84,11 +62,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         borderRadius: BorderRadius.circular(12.r),
         borderSide: BorderSide.none,
       ),
-      errorStyle: TextStyle(
-        color: _yellow,
-        fontSize: 12.sp,
-        fontFamily: 'Inter',
-      ),
+      errorStyle:
+      TextStyle(color: _yellow, fontSize: 12.sp, fontFamily: 'Inter'),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.r),
         borderSide: BorderSide(color: _yellow, width: 1.5),
@@ -124,14 +99,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back, color: _yellow),
         ),
-        title: Text(
-          'Register',
-          style: TextStyle(
-            fontFamily: 'Inter',
-            fontSize: 16.sp,
-            color: _yellow,
-          ),
-        ),
+        title: Text('Register',
+            style:
+            TextStyle(fontFamily: 'Inter', fontSize: 16.sp, color: _yellow)),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -143,7 +113,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // ---- Avatars ----
                   SizedBox(height: 8.h),
                   CarouselSlider(
                     options: CarouselOptions(
@@ -156,29 +125,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           setState(() => _currentAvatar = i),
                     ),
                     items: _avatarSeeds.map((seed) {
-                      final isSelected = _avatarSeeds[_currentAvatar] == seed;
+                      final sel = _avatarSeeds[_currentAvatar] == seed;
                       return GestureDetector(
-                        onTap: () => setState(
-                          () => _currentAvatar = _avatarSeeds.indexOf(seed),
-                        ),
+                        onTap: () => setState(() =>
+                        _currentAvatar = _avatarSeeds.indexOf(seed)),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 180),
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? _yellow : Colors.white24,
-                              width: isSelected ? 3 : 1,
-                            ),
+                                color: sel ? _yellow : Colors.white24,
+                                width: sel ? 3 : 1),
                           ),
                           child: CircleAvatar(
-                            radius: isSelected ? 50 : 38,
+                            radius: sel ? 50 : 38,
                             backgroundColor: Colors.black,
                             child: ClipOval(
                               child: RandomAvatar(
                                 seed,
-                                height: isSelected ? 120 : 70,
-                                width: isSelected ? 120 : 70,
+                                height: sel ? 120 : 70,
+                                width: sel ? 120 : 70,
                               ),
                             ),
                           ),
@@ -187,36 +154,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }).toList(),
                   ),
                   SizedBox(height: 16.h),
-                   Text(
-                    'Avatar',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      color: Colors.white,
-                      fontSize: 16.sp,
-                    ),
-                  ),
+                  const Text('Avatar',
+                      style: TextStyle(
+                          fontFamily: 'Inter',
+                          color: Colors.white,
+                          fontSize: 16)),
                   SizedBox(height: 16.h),
 
-                  // ---- Fields ----
                   TextFormField(
                     controller: _nameCtrl,
-                    style:  TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                    ),
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                     decoration: _dec('Name', Icons.badge_rounded),
                     validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Enter name' : null,
+                    (v == null || v.trim().isEmpty) ? 'Enter name' : null,
                   ),
                   SizedBox(height: 16.h),
 
                   TextFormField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                    ),
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                     decoration: _dec('Email', Icons.email_rounded),
                     validator: (v) {
                       final t = (v ?? '').trim();
@@ -230,10 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _passCtrl,
                     obscureText: _hidePass,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                    ),
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                     decoration: _dec(
                       'Password',
                       Icons.lock_rounded,
@@ -259,24 +213,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _confirmCtrl,
                     obscureText: _hideConfirm,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                    ),
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                     decoration: _dec(
                       'Confirm Password',
                       Icons.lock_rounded,
                       suffix: IconButton(
                         icon: Icon(
-                          _hideConfirm
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          _hideConfirm ? Icons.visibility_off : Icons.visibility,
                           color: Colors.white,
                         ),
                         onPressed: _loading
                             ? null
-                            : () =>
-                                  setState(() => _hideConfirm = !_hideConfirm),
+                            : () => setState(() => _hideConfirm = !_hideConfirm),
                       ),
                     ),
                     validator: (v) {
@@ -291,22 +239,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _phoneCtrl,
                     keyboardType: TextInputType.phone,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Inter',
-                    ),
+                    style: const TextStyle(color: Colors.white, fontFamily: 'Inter'),
                     decoration: _dec('Phone Number', Icons.phone_rounded),
                     validator: (v) {
                       final t = (v ?? '').trim();
-                      if (t.isEmpty) return null;
-                      if (!phoneRx.hasMatch(t))
+                      if (t.isEmpty) return null; // optional
+                      if (!RegExp(r'^\+?[0-9]{7,15}$').hasMatch(t)) {
                         return 'Enter valid phone (7–15 digits)';
+                      }
                       return null;
                     },
                   ),
                   SizedBox(height: 20.h),
 
-                  // ---- Create Account ----
                   SizedBox(
                     width: double.infinity,
                     height: 56.h,
@@ -315,7 +260,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ? null
                           : () async {
                         FocusScope.of(context).unfocus();
-                        if (!(_formKey.currentState?.validate() ?? false)) return;
+                        if (!(_formKey.currentState?.validate() ?? false)) {
+                          return;
+                        }
 
                         final reg = RegisterModel(
                           name: _nameCtrl.text.trim(),
@@ -326,39 +273,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           avatarSeed: _avatarSeeds[_currentAvatar],
                         );
 
+                        final auth = AuthApiService();
                         setState(() => _loading = true);
                         try {
-                          // (Optional) quick pre-check — you can keep or remove it
-                          final methods = await FirebaseAuth.instance
-                              .fetchSignInMethodsForEmail(reg.email);
-                          if (!mounted) return;
-                          if (methods.isNotEmpty) {
-                            _toast(context, 'This email is already registered. Try logging in.');
-                            setState(() => _loading = false);
-                            return;
-                          }
+                          // API requires `avaterId` (note spelling)
+                          final avaterId = _currentAvatar + 1;
 
-                          // Create the account
-                          final auth = FirebaseAuthService();
-                          await auth.register(reg);
+                          final ApiRegisterResponse res =
+                          await auth.register(reg, avaterId: avaterId);
 
                           if (!mounted) return;
-                          _toast(context, 'Account created!');
-
-                          // IMPORTANT: turn loading OFF before navigation
-                          setState(() => _loading = false);
-
-                          // Navigate to Home (clear stack)
+                          _toast(context,
+                              res.message.isNotEmpty ? res.message : 'Account created!');
+                          // Register returns no token → go to Login
                           Navigator.of(context).pushNamedAndRemoveUntil(
-                            HomeScreen.routeName,
-                                (route) => false,
+                            LoginScreen.routeName,
+                                (r) => false,
                           );
                         } catch (e) {
                           if (!mounted) return;
-                          _toast(context, _authErrorToMessage(e));
-                          setState(() => _loading = false);
+                          _toast(context, e.toString());
+                        } finally {
+                          if (mounted) setState(() => _loading = false);
                         }
-                            },
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _yellow,
                         foregroundColor: const Color(0xFF121312),
@@ -374,52 +312,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: _loading
                           ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Color(0xFF121312),
-                              ),
-                            )
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFF121312),
+                        ),
+                      )
                           : const Text('Create Account'),
                     ),
                   ),
                   SizedBox(height: 10.h),
 
-                  // ---- Login link ----
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Already Have Account ? ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.sp,
-                          fontFamily: 'Inter',
-                        ),
-                      ),
+                      Text('Already Have Account ? ',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontFamily: 'Inter')),
                       GestureDetector(
                         onTap: _loading
                             ? null
                             : () => Navigator.pushNamed(
-                                context,
-                                LoginScreen.routeName,
-                              ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            color: _yellow,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Inter',
-                          ),
+                          context,
+                          LoginScreen.routeName,
                         ),
+                        child: Text('Login',
+                            style: TextStyle(
+                                color: _yellow,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Inter')),
                       ),
                     ],
                   ),
                   SizedBox(height: 16.h),
 
-                  // ---- Language ----
                   Container(
                     alignment: Alignment.center,
                     height: 40.h,
@@ -440,12 +370,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(25.r),
                               border: Border.all(color: _yellow, width: 3.w),
                             ),
-                            child: Image.asset(
-                              "assets/icons/us.png",
-                              width: 30.w,
-                              height: 30.w,
-                              fit: BoxFit.contain,
-                            ),
+                            child: Image.asset("assets/icons/us.png",
+                                width: 30.w, height: 30.w, fit: BoxFit.contain),
                           ),
                         ),
                         GestureDetector(
@@ -455,12 +381,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(25.r),
                             ),
-                            child: Image.asset(
-                              "assets/icons/eg.png",
-                              width: 30.w,
-                              height: 30.w,
-                              fit: BoxFit.contain,
-                            ),
+                            child: Image.asset("assets/icons/eg.png",
+                                width: 30.w, height: 30.w, fit: BoxFit.contain),
                           ),
                         ),
                       ],

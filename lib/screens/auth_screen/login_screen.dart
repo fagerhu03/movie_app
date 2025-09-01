@@ -4,19 +4,19 @@ import 'package:firebase_auth/firebase_auth.dart'; // <-- add this
 import 'package:movie_app/screens/auth_screen/forget_password_screen.dart';
 import 'package:movie_app/screens/auth_screen/register_screen.dart';
 
+import '../../data/models/api_login_response..dart';
 import '../../data/models/sign_in_model.dart';
+import '../../domain/services/auth_api_service.dart';
 import '../../domain/services/firebase_auth_service.dart';
 import '../home_screen/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
   static const routeName = 'loginScreen';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
-
-final _auth = FirebaseAuthService();
 
 void _toast(BuildContext c, String msg) =>
     ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(msg)));
@@ -188,16 +188,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           password: _passCtrl.text,
                         );
 
+                        final _auth = AuthApiService();
                         setState(() => _loading = true);
                         try {
-                          await _auth.signIn(m);
-                          _toast(context, 'Welcome back!');
-                          if (mounted) {
-                            Navigator.pushReplacementNamed(
-                                context, HomeScreen.routeName);
-                          }
+                          final ApiLoginResponse res = await _auth.login(m); // m = SignInModel
+                          if (!mounted) return;
+                          _toast(context, res.message.isNotEmpty ? res.message : 'Logged in');
+                          setState(() => _loading = false);
+                          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
                         } catch (e) {
-                          _toast(context, authErrorToMessage(e));
+                          if (!mounted) return;
+                          _toast(context, e.toString());
+                          setState(() => _loading = false);
                         } finally {
                           if (mounted) setState(() => _loading = false);
                         }
@@ -279,6 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _loading
                           ? null
                           : () async {
+                        final _auth = FirebaseAuthService();
                         FocusScope.of(context).unfocus();
                         setState(() => _loading = true);
                         try {
