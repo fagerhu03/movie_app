@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../domain/services/firebase_auth_service.dart';
+import '../../domain/services/auth_api_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
    const ForgotPasswordScreen({super.key, this.onVerify});
@@ -16,10 +16,10 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _auth = FirebaseAuthService();
   final _emailCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   static const yellow = Color(0xFFFFC107);
+  bool _loading = false;
 
   InputDecoration _dec(String hint) => InputDecoration(
     hintText: hint,
@@ -96,14 +96,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: _loading
+                        ? null
+                        : () async {
                       FocusScope.of(context).unfocus();
-                      if (_formKey.currentState?.validate() ?? false) {
-                        widget.onVerify?.call(_emailCtrl.text.trim());
-                        await _auth.sendPasswordReset(_emailCtrl.text.trim());
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('If the email exists, a reset link was sent.')),
-                        );
+                      if (!(_formKey.currentState?.validate() ?? false)) return;
+
+                      setState(() => _loading = true);
+                      try {
+                        final auth = AuthApiService();
+                        final msg = await auth.forgotPassword(_emailCtrl.text.trim());
+                        if (!mounted) return;
+                        _toast(context, msg.isNotEmpty ? msg : 'If this email exists, a reset link was sent.');
+                        Navigator.pop(context); // back to Login
+                      } catch (e) {
+                        if (!mounted) return;
+                        _toast(context, e.toString());
+                      } finally {
+                        if (mounted) setState(() => _loading = false);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -129,4 +139,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ),
     );
   }
+  void _toast(BuildContext c, String msg) =>
+      ScaffoldMessenger.of(c).showSnackBar(SnackBar(content: Text(msg)));
 }
