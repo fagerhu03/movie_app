@@ -18,8 +18,6 @@ class HeroCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final yellow = const Color(0xFFFFC107);
-
     return Stack(
       fit: StackFit.expand,
       children: [
