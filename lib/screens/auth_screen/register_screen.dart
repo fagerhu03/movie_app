@@ -88,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final emailRx = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-    final phoneRx = RegExp(r'^\+?[0-9]{7,15}$');
+    // final phoneRx = RegExp(r'^\+?[0-9]{7,15}$');
 
     return Scaffold(
       backgroundColor: const Color(0xFF121312),
