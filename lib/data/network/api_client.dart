@@ -1,29 +1,32 @@
 // lib/data/network/api_client.dart
 import 'package:dio/dio.dart';
-import '../../core/env.dart';
 import '../local/token_storage.dart';
 
 class ApiClient {
   final Dio dio;
-  final TokenStorage tokens;
+  final TokenStorage _tokens;
 
-  ApiClient({Dio? dio, TokenStorage? tokens})
-      : dio = dio ??
-      Dio(BaseOptions(
-        baseUrl: Env.baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 20),
-        headers: {'Accept': 'application/json'},
-      )),
-        tokens = tokens ?? TokenStorage() {
-    this.dio.interceptors.add(InterceptorsWrapper(
+  ApiClient._(this.dio, this._tokens);
+
+  factory ApiClient({String? baseUrl}) {
+    final tokens = TokenStorage();
+    final dio = Dio(BaseOptions(
+      baseUrl: baseUrl ?? 'https://route-movie-apis.vercel.app', // تأكد
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 20),
+      headers: {'Content-Type': 'application/json'},
+    ));
+
+    dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        final t = await this.tokens.readAccess();
+        final t = await tokens.readAccess();
         if (t != null && t.isNotEmpty) {
           options.headers['Authorization'] = 'Bearer $t';
         }
-        handler.next(options);
+        return handler.next(options);
       },
     ));
+
+    return ApiClient._(dio, tokens);
   }
 }
