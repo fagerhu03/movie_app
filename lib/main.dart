@@ -48,7 +48,9 @@ class MyApp extends StatelessWidget {
 
           //home
           HomeScreen.routeName: (_) => HomeScreen(),
-          MovieDetailsScreen.routeName: (_) => MovieDetailsScreen(),
+          MovieDetailsScreen.routeName: (ctx) {
+            final id = ModalRoute.of(ctx)!.settings.arguments as int;
+            return MovieDetailsScreen(movieId: id);},
           //tabs
           HomeTab.routeName: (_) => HomeTab(),
 

@@ -1,4 +1,3 @@
-// lib/data/models/yts_list_response.dart
 import 'yts_movie.dart';
 
 class YtsListResponse {
