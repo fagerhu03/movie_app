@@ -9,7 +9,7 @@ import '../../domain/services/profile_api_service.dart';
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key, required this.me});
   final UserProfile me;
-
+  static const routeName = 'UpdateProfileScreen';
   @override
   State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
 }
