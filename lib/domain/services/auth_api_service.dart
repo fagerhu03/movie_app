@@ -129,4 +129,5 @@ class AuthApiService {
     // fallback
     return e.message ?? 'Request failed';
   }
+
 }
