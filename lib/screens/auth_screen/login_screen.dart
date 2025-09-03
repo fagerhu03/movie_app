@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart'; // <-- add this
 import 'package:movie_app/screens/auth_screen/forget_password_screen.dart';
 import 'package:movie_app/screens/auth_screen/register_screen.dart';
 
-import '../../data/models/api_login_response..dart';
-import '../../data/models/sign_in_model.dart';
+import '../../data/models/auth_model/api_model/api_login_response..dart';
+import '../../data/models/auth_model/sign_in_model.dart';
 import '../../domain/services/auth_api_service.dart';
 import '../../domain/services/firebase_auth_service.dart';
 import '../home_screen/home_screen.dart';

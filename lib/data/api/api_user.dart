@@ -17,8 +17,8 @@ class ApiUser {
 }
 
 class ApiAuthResponse {
-  final String accessToken;        // e.g. "token" or "access_token"
-  final String? refreshToken;      // if your API returns one
+  final String accessToken;
+  final String? refreshToken;
   final ApiUser user;
 
   ApiAuthResponse({
