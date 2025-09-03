@@ -1,69 +1,50 @@
-// lib/domain/services/auth_api_service.dart
 import 'package:dio/dio.dart';
-
-import '../../data/models/auth_model/api_model/api_login_response..dart';
-import '../../data/models/auth_model/api_model/api_register_response.dart';
-import '../../data/models/auth_model/register_model.dart';
+import '../../data/models/api_login_response..dart';
+import '../../data/models/api_register_response.dart';
+import '../../data/models/register_model.dart';
+import '../../data/models/sign_in_model.dart';
 import '../../data/network/api_client.dart';
 import '../../data/local/token_storage.dart';
-
-import '../../data/models/auth_model/sign_in_model.dart';
-
 
 class AuthApiService {
   final ApiClient _client;
   final TokenStorage _tokens;
 
   AuthApiService({ApiClient? client, TokenStorage? tokens})
-      : _client = client ?? ApiClient(),
-        _tokens = tokens ?? TokenStorage();
+    : _client = client ?? ApiClient(),
+      _tokens = tokens ?? TokenStorage();
 
   /// -------- REGISTER --------
-  /// API expects: name, email, password, phone, avaterId (spelled exactly)
-  Future<ApiRegisterResponse> register(
-      RegisterModel data, {
-        required int avaterId,
-      }) async {
+  Future<ApiRegisterResponse> register(RegisterModel data, {required int avaterId}) async {
     try {
-      final res = await _client.dio.post(
-        '/auth/register',
-        data: {
-          'name': data.name,
-          'email': data.email,
-          'password': data.password,
-          'confirmPassword': data.confirmPassword,
-          'phone': data.phone,
-          'avaterId': avaterId, // required by your API
-        },
-      );
+      final res = await _client.dio.post('/auth/register', data: {
+        'name': data.name,
+        'email': data.email,
+        'password': data.password,
+        'confirmPassword': data.confirmPassword,
+        'phone': data.phone,
+        'avaterId': avaterId,
+      });
       return ApiRegisterResponse.fromJson(res.data as Map<String, dynamic>);
     } on DioException catch (e) {
-      // 👇 helps you see the exact validation error in the debug console
-      // e.g. { "message": "email already exists" } or { "message": "avaterId is required" }
-      // ignore: avoid_print
-      print('REGISTER ERROR BODY: ${e.response?.data}');
-      throw Exception(_errMsg(e));
+      final body = e.response?.data;
+      throw Exception(
+        body is Map && body['message'] != null
+            ? body['message'].toString()
+            : e.message ?? 'Register failed',
+      );
     }
   }
 
   /// -------- LOGIN --------
-  /// Response shape (per your screenshot):
-  /// { "message": "Success Login", "data": "<JWT_TOKEN>" }
   Future<ApiLoginResponse> login(SignInModel data) async {
     try {
-      final res = await _client.dio.post(
-        '/auth/login',
-        data: {
-          'email': data.email,
-          'password': data.password,
-        },
-      );
-
-      final parsed =
-      ApiLoginResponse.fromJson(res.data as Map<String, dynamic>);
-
-      // store token for subsequent requests (Authorization: Bearer ...)
-      await _tokens.saveAccess(parsed.token);
+      final res = await _client.dio.post('/auth/login', data: {
+        'email': data.email,
+        'password': data.password,
+      });
+      final parsed = ApiLoginResponse.fromJson(res.data as Map<String, dynamic>);
+      await _tokens.saveAccess(parsed.token); // مهم!
       return parsed;
     } on DioException catch (e) {
       // ignore: avoid_print
@@ -71,7 +52,6 @@ class AuthApiService {
       throw Exception(_errMsg(e));
     }
   }
-
 
   /// -------- FORGETPASSWORD --------
   Future<String> forgotPassword(String email) async {
@@ -85,8 +65,9 @@ class AuthApiService {
       // Normalize message (sometimes it's string, sometimes list)
       final data = res.data;
       final msg = (data is Map && data['message'] != null)
-          ? (data['message'] is List ? data['message'].first.toString()
-          : data['message'].toString())
+          ? (data['message'] is List
+                ? data['message'].first.toString()
+                : data['message'].toString())
           : 'Reset link sent';
       return msg;
     } on DioException catch (e) {
@@ -101,7 +82,6 @@ class AuthApiService {
       throw Exception(e.message ?? 'Request failed');
     }
   }
-
 
   Future<void> logout() async {
     // If the API has /auth/logout you can call it here before clearing
@@ -129,5 +109,4 @@ class AuthApiService {
     // fallback
     return e.message ?? 'Request failed';
   }
-
 }

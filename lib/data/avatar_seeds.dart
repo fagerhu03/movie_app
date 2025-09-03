@@ -1,4 +1,3 @@
-/// The same seeds you used in Register (expand as you like).
 const List<String> kAvatarSeeds = [
   'movie_user_1',
   'movie_user_2',
@@ -13,8 +12,6 @@ const List<String> kAvatarSeeds = [
   'reel_11',
   'projector_12',
 ];
-
-/// The API stores `avaterId` as 1-based. Clamp and convert safely.
 int clampAvatarId(int? id) {
   final n = kAvatarSeeds.length;
   if (n == 0) return 1;
@@ -23,8 +20,6 @@ int clampAvatarId(int? id) {
   if (i >= n) return n;
   return i + 1;
 }
-
-/// Get seed string for a (1-based) id.
 String avatarSeedFor(int? avaterId1Based) {
   final id = clampAvatarId(avaterId1Based);
   return kAvatarSeeds[id - 1];

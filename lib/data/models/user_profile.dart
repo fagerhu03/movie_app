@@ -3,11 +3,11 @@ class UserProfile {
   final String name;
   final String email;
   final String phone;
-  final int avaterId; // spelled like your API response
+  final int avaterId;
   final int wishCount;
   final int historyCount;
 
-  const UserProfile({
+  UserProfile({
     required this.id,
     required this.name,
     required this.email,
@@ -18,20 +18,31 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> j) {
+    final d = (j['data'] is Map) ? j['data'] as Map<String, dynamic> : j;
     return UserProfile(
-      id: (j['_id'] ?? j['id'] ?? '').toString(),
-      name: (j['name'] ?? '').toString(),
-      email: (j['email'] ?? '').toString(),
-      phone: (j['phone'] ?? '').toString(),
-      avaterId: int.tryParse('${j['avaterId'] ?? j['avatarId'] ?? 1}') ?? 1,
-      wishCount: int.tryParse('${j['wishCount'] ?? j['wish_list_count'] ?? 0}') ?? 0,
-      historyCount: int.tryParse('${j['historyCount'] ?? j['history_count'] ?? 0}') ?? 0,
+      id: (d['_id'] ?? d['id'] ?? '').toString(),
+      name: (d['name'] ?? '').toString(),
+      email: (d['email'] ?? '').toString(),
+      phone: (d['phone'] ?? '').toString(),
+      avaterId: int.tryParse('${d['avaterId'] ?? 1}') ?? 1,
+      wishCount: int.tryParse('${d['wishCount'] ?? 0}') ?? 0,
+      historyCount: int.tryParse('${d['historyCount'] ?? 0}') ?? 0,
     );
   }
+}
 
-  Map<String, dynamic> toUpdateJson() => {
-    'name': name,
-    'phone': phone,
-    'avaterId': avaterId,
-  };
+class ListEntry {
+  final int movieId;
+  final String imageUrl;
+  final double rating;
+
+  ListEntry({required this.movieId, required this.imageUrl, required this.rating});
+
+  factory ListEntry.fromJson(Map<String, dynamic> j) {
+    return ListEntry(
+      movieId: int.tryParse('${j['movieId'] ?? j['id'] ?? 0}') ?? 0,
+      imageUrl: (j['imageUrl'] ?? j['poster'] ?? j['image'] ?? '').toString(),
+      rating: double.tryParse('${j['rating'] ?? j['rate'] ?? 0}') ?? 0.0,
+    );
+  }
 }
