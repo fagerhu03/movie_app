@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:random_avatar/random_avatar.dart';
 import '../../../data/avatar_seeds.dart';
-import '../../../data/models/user_profile.dart';
+import '../../../data/models/user_profile.dart' ;
 import '../../../domain/services/profile_api_service.dart';
 import '../../../domain/services/auth_api_service.dart';
 import '../../movie_details/movie_details_screen.dart';

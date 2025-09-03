@@ -1,32 +1,29 @@
-// lib/data/network/api_client.dart
+// lib/data/network/api_client.dart (مختصر)
 import 'package:dio/dio.dart';
 import '../local/token_storage.dart';
 
 class ApiClient {
   final Dio dio;
-  final TokenStorage _tokens;
+  final TokenStorage _tokens = TokenStorage();
 
-  ApiClient._(this.dio, this._tokens);
-
-  factory ApiClient({String? baseUrl}) {
-    final tokens = TokenStorage();
-    final dio = Dio(BaseOptions(
-      baseUrl: baseUrl ?? 'https://route-movie-apis.vercel.app', // تأكد
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 20),
-      headers: {'Content-Type': 'application/json'},
-    ));
-
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final t = await tokens.readAccess();
-        if (t != null && t.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $t';
-        }
-        return handler.next(options);
-      },
-    ));
-
-    return ApiClient._(dio, tokens);
+  ApiClient({Dio? dio})
+      : dio = dio ??
+      Dio(BaseOptions(
+        baseUrl: 'https://route-movie-apis.vercel.app', // غيّري لو مختلف
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 20),
+        headers: {'Content-Type': 'application/json'},
+      )) {
+    this.dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await _tokens.readAccess();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+          handler.next(options);
+        },
+      ),
+    );
   }
 }
