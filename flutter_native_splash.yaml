@@ -1,0 +1,25 @@
+flutter_native_splash:
+  color: "#121312"                 # dark background (your app bg)
+  color_dark: "#121312"
+
+  image: assets/icons/logoo.png  # center logo (4x PNG)
+  image_dark: assets/icons/logo.png
+
+  # Optional small brand mark at bottom (works on Android / iOS / Web pre-Android12)
+  # branding: assets/splash/android12_branding.png
+  # branding_dark: assets/splash/android12_branding.png
+  # branding_mode: bottom
+  # branding_bottom_padding: 16
+
+  android_12:
+    # Main icon shown inside the Android 12 circular mask
+    image: assets/icons/logoo.png
+    color: "#121312"
+    color_dark: "#121312"
+    # If your icon already has transparency and you don't want a background, omit icon_background_color.
+    # icon_background_color: "#121312"
+
+  # (Optional) position tweaks
+  # android_gravity: center
+  # ios_content_mode: center
+  # web_image_mode: center
