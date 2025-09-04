@@ -1,123 +1,128 @@
 // lib/domain/services/profile_api_service.dart
 import 'package:dio/dio.dart';
 
+import '../../data/local/local_collections.dart';
 import '../../data/network/api_client.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/list_entry.dart';
 
 class ProfileApiService {
   final ApiClient _client;
-  ProfileApiService({ApiClient? client}) : _client = client ?? ApiClient();
+  final LocalCollections _local;
 
-  // ====== غيّري القيم دي حسب الدوكيومنتيشن ======
-  static const String kGetProfilePath   = '/profile';   // مثال: '/auth/me' أو '/profile/me'
-  static const String kUpdateProfilePath= '/profile';   // مثال: '/profile' (PATCH/PUT)
-  static const String kDeleteAccountPath= '/profile';   // مثال: '/profile'
-  static const String kWishListPath     = '/wishlist';  // مثال: '/profile/wishlist'
-  static const String kWishAddPath      = '/wishlist';  // POST body: { movieId }
-  static const String kWishRemovePath   = '/wishlist';  // DELETE: '$kWishRemovePath/:movieId'
-  static const String kHistoryPath      = '/history';   // مثال: '/profile/history'
-  // ================================================
+  ProfileApiService({ApiClient? client, LocalCollections? local})
+      : _client = client ?? ApiClient(),
+        _local = local ?? LocalCollections();
 
-  // Some APIs wrap response in { message, data }, فنعالج الحالتين
-  Map<String, dynamic> _unwrap(dynamic resData) {
-    if (resData is Map && resData['data'] is Map) {
-      return resData['data'] as Map<String, dynamic>;
-    }
-    return (resData as Map<String, dynamic>);
+  // Adjust these to your backend if needed
+  static const String kGetProfilePath   = '/profile';
+  static const String kUpdateProfilePath= '/profile';
+  static const String kDeleteAccountPath= '/profile';
+  static const String kWishListPath     = '/wishlist';
+  static const String kWishAddPath      = '/wishlist';
+  static const String kWishRemovePath   = '/wishlist';
+  static const String kHistoryPath      = '/history';
+
+  // -------- Helpers --------
+  Map<String, dynamic> _unwrapObj(dynamic d) {
+    if (d is Map && d['data'] is Map) return d['data'] as Map<String, dynamic>;
+    return (d as Map<String, dynamic>);
   }
 
-  List _unwrapList(dynamic resData) {
-    if (resData is Map && resData['data'] is List) {
-      return resData['data'] as List;
-    }
-    if (resData is List) return resData;
+  List _unwrapList(dynamic d) {
+    if (d is Map && d['data'] is List) return d['data'] as List;
+    if (d is List) return d;
     return const [];
   }
 
-  // --- Profile ---
+  Never _throw(DioException e, {String fallback = 'Request failed'}) {
+    final data = e.response?.data;
+    if (data is Map && data['message'] is String) {
+      throw Exception(data['message'] as String);
+    }
+    throw Exception(e.message ?? fallback);
+  }
+
+  // -------- API --------
   Future<UserProfile> me() async {
     try {
       final res = await _client.dio.get(kGetProfilePath);
-      final data = _unwrap(res.data);
-      return UserProfile.fromJson(data);
+      final obj = _unwrapObj(res.data);
+      return UserProfile.fromJson(obj);
     } on DioException catch (e) {
-      throw Exception(_err(e));
+      _throw(e, fallback: 'Failed to load profile');
     }
   }
 
   Future<UserProfile> update({
     required String name,
     required String phone,
-    required int avaterId, // (تهجئة الـ API)
+    required int avaterId, // 1-based index expected by backend
   }) async {
     try {
-      // حسب الـ Postman: لو بيستخدم PATCH أو PUT غيري هنا
       final res = await _client.dio.patch(
         kUpdateProfilePath,
-        data: {
-          'name': name,
-          'phone': phone,
-          'avaterId': avaterId,
-        },
+        data: {'name': name, 'phone': phone, 'avaterId': avaterId},
       );
-      final data = _unwrap(res.data);
-      return UserProfile.fromJson(data);
+      final obj = _unwrapObj(res.data);
+      return UserProfile.fromJson(obj);
     } on DioException catch (e) {
-      throw Exception(_err(e));
+      _throw(e, fallback: 'Failed to update profile');
     }
   }
 
+  /// Deletes the account on the server, then clears local caches.
+  /// (Token cleanup/navigation is handled by the caller via AuthApiService.logout.)
   Future<void> deleteAccount() async {
     try {
       await _client.dio.delete(kDeleteAccountPath);
+      // Clear local Hive caches so UI updates immediately
+      await _local.replaceWish(const <ListEntry>[]);
+      await _local.replaceHistory(const <ListEntry>[]);
     } on DioException catch (e) {
-      throw Exception(_err(e));
+      _throw(e, fallback: 'Failed to delete account');
     }
   }
 
-  // --- Wish List ---
   Future<List<ListEntry>> wishList() async {
     try {
       final res = await _client.dio.get(kWishListPath);
-      final list = _unwrapList(res.data);
-      return list.map((e) => ListEntry.fromJson(e as Map<String, dynamic>)).toList();
-    } on DioException catch (e) {
-      throw Exception(_err(e));
+      final list = _unwrapList(res.data)
+          .map((e) => ListEntry.fromJson(e as Map<String, dynamic>))
+          .toList();
+      await _local.replaceWish(list);
+      return list;
+    } on DioException catch (_) {
+      // Fallback to local cache if remote fails
+      return _local.getWish();
     }
   }
 
-  Future<void> addToWish(int movieId) async {
-    try {
-      await _client.dio.post(kWishAddPath, data: {'movieId': movieId});
-    } on DioException catch (e) {
-      throw Exception(_err(e));
-    }
-  }
-
-  Future<void> removeFromWish(int movieId) async {
-    try {
-      // لو الـ API بيستخدم query بدلاً من path params غيري السطر ده
-      await _client.dio.delete('$kWishRemovePath/$movieId');
-    } on DioException catch (e) {
-      throw Exception(_err(e));
-    }
-  }
-
-  // --- History ---
   Future<List<ListEntry>> history() async {
     try {
       final res = await _client.dio.get(kHistoryPath);
-      final list = _unwrapList(res.data);
-      return list.map((e) => ListEntry.fromJson(e as Map<String, dynamic>)).toList();
-    } on DioException catch (e) {
-      throw Exception(_err(e));
+      final list = _unwrapList(res.data)
+          .map((e) => ListEntry.fromJson(e as Map<String, dynamic>))
+          .toList();
+      await _local.replaceHistory(list);
+      return list;
+    } on DioException catch (_) {
+      // Fallback to local cache if remote fails
+      return _local.getHistory();
     }
   }
 
-  String _err(DioException e) {
-    final d = e.response?.data;
-    if (d is Map && d['message'] is String) return d['message'] as String;
-    return e.message ?? 'Request failed';
+  Future<void> addToWish(ListEntry e) async {
+    // Server first
+    await _client.dio.post(kWishAddPath, data: {'movieId': e.movieId});
+    // Then local cache
+    await _local.addWish(e);
+  }
+
+  Future<void> removeFromWish(int movieId) async {
+    // Server first
+    await _client.dio.delete('$kWishRemovePath/$movieId');
+    // Then local cache
+    await _local.removeWish(movieId);
   }
 }

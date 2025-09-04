@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
 import '../../domain/services/yts_api_service.dart';
 import '../../data/models/movie_model/yts_movie.dart';
 import '../../data/models/movie_model/yts_movie_details.dart';
+import '../../data/models/list_entry.dart';
+import '../../data/local/local_collections.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   static const routeName = 'MovieDetails';
@@ -18,6 +20,8 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final _api = YtsApiService();
+  final _local = LocalCollections();
+
   late Future<YtsMovieDetails> _detailsF;
   late Future<List<YtsMovie>> _similarF;
 
@@ -26,6 +30,33 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     super.initState();
     _detailsF = _api.movieDetails(widget.movieId);
     _similarF = _api.suggestions(widget.movieId);
+  }
+
+  Box<ListEntry> get _wishBox  => Hive.box<ListEntry>('wishlistBox');
+  Box<ListEntry> get _histBox  => Hive.box<ListEntry>('historyBox');
+
+  ListEntry _asEntry(YtsMovieDetails d) => ListEntry(
+    movieId: d.id,
+    imageUrl: d.mediumCover ?? d.cover,
+    rating: d.rating, title: '',
+  );
+
+  Future<void> _toggleWish(YtsMovieDetails d) async {
+    final key = d.id;
+    if (_wishBox.containsKey(key)) {
+      await _wishBox.delete(key);
+    } else {
+      await _wishBox.put(key, _asEntry(d));
+    }
+  }
+
+  Future<void> _toggleHistory(YtsMovieDetails d) async {
+    final key = d.id;
+    if (_histBox.containsKey(key)) {
+      await _histBox.delete(key);
+    } else {
+      await _histBox.put(key, _asEntry(d));
+    }
   }
 
   @override
@@ -62,11 +93,23 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () => Navigator.pop(context),
                 ),
-                actions: const [
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.bookmark_border, color: Colors.white),
-                  )
+                // REACTIVE bookmark (NEW)
+                actions: [
+                  ValueListenableBuilder(
+                    valueListenable: _wishBox.listenable(),
+                    builder: (_, Box<ListEntry> box, __) {
+                      final inWish = box.containsKey(d.id);
+                      return IconButton(
+                        tooltip: inWish ? 'Remove from Wish' : 'Add to Wish',
+                        onPressed: () => _toggleWish(d),
+                        icon: Icon(
+                          inWish ? Icons.bookmark : Icons.bookmark_border,
+                          color: inWish ? yellow : Colors.white,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 6),
                 ],
                 pinned: true,
                 expandedHeight: 400.h,
@@ -152,8 +195,73 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           child: const Text('Watch',style: TextStyle(fontSize: 20),),
                         ),
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 10.h),
 
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ValueListenableBuilder(
+                              valueListenable: _wishBox.listenable(),
+                              builder: (_, Box<ListEntry> box, __) {
+                                final inWish = box.containsKey(d.id);
+                                return OutlinedButton.icon(
+                                  onPressed: () => _toggleWish(d),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: inWish ? yellow : Colors.white54,
+                                    ),
+                                    foregroundColor:
+                                    inWish ? yellow : Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  icon: Icon(
+                                    inWish
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_add_outlined,
+                                  ),
+                                  label: Text(
+                                    inWish ? 'In Wish' : 'Add to Wish',style: TextStyle(fontSize: 16),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: ValueListenableBuilder(
+                              valueListenable: _histBox.listenable(),
+                              builder: (_, Box<ListEntry> box, __) {
+                                final inHistory = box.containsKey(d.id);
+                                return OutlinedButton.icon(
+                                  onPressed: () => _toggleHistory(d),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: inHistory ? yellow : Colors.white54,
+                                    ),
+                                    foregroundColor:
+                                    inHistory ? yellow : Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  icon: Icon(
+                                    inHistory
+                                        ? Icons.check_circle
+                                        : Icons.history,
+                                  ),
+                                  label: Text(
+                                    inHistory ? 'In History' : 'Add History',style: TextStyle(fontSize: 16),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 12.h),
                       Row(
                         children: [
                           Expanded(child: _chipStat(Icons.favorite, d.likeCount.toString())),
@@ -260,8 +368,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
-                                      c.urlSmallImage ??
-                                          'https://i.imgur.com/0KFBHTB.png',
+                                      c.urlSmallImage ?? 'https://i.imgur.com/0KFBHTB.png',
                                       width: 48, height: 48, fit: BoxFit.cover,
                                     ),
                                   ),
@@ -271,11 +378,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text('Name : ${c.name}',
-                                            style: const TextStyle(
-                                                color: Colors.white)),
+                                            style: const TextStyle(color: Colors.white)),
                                         Text('Character : ${c.character}',
-                                            style: const TextStyle(
-                                                color: Colors.white70)),
+                                            style: const TextStyle(color: Colors.white70)),
                                       ],
                                     ),
                                   ),
@@ -337,7 +442,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   );
 
   Future<void> _onPlayPressed(BuildContext context, YtsMovieDetails d) async {
-    // 1) Prefer trailer (in-app)
     if (d.ytTrailerCode != null && d.ytTrailerCode!.isNotEmpty) {
       final controller = YoutubePlayerController(
         initialVideoId: d.ytTrailerCode!,
@@ -352,7 +456,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       return;
     }
 
-    // 2) Fallback: open torrent qualities in bottom sheet
     if (d.torrents.isNotEmpty) {
       // ignore: use_build_context_synchronously
       showModalBottomSheet(

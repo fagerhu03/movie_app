@@ -36,6 +36,7 @@ class YtsMovieDetails {
   final int downloadCount;
   final String description;
   final String cover;
+  final String mediumCover;
   final String? background;
   final String? screenshot1, screenshot2, screenshot3;
   final String? ytTrailerCode;
@@ -43,7 +44,7 @@ class YtsMovieDetails {
   final List<YtsTorrent> torrents;
   final List<YtsCast> cast;
 
-  YtsMovieDetails({
+  YtsMovieDetails( {
     required this.id,
     required this.title,
     required this.year,
@@ -59,7 +60,7 @@ class YtsMovieDetails {
     required this.ytTrailerCode,
     required this.genres,
     required this.torrents,
-    required this.cast,
+    required this.cast,required this.mediumCover
   });
 
   factory YtsMovieDetails.fromJson(Map<String, dynamic> j) => YtsMovieDetails(
@@ -71,6 +72,7 @@ class YtsMovieDetails {
     downloadCount: j['download_count'] ?? 0,
     description: j['description_full'] ?? '',
     cover: j['large_cover_image'] ?? '',
+    mediumCover: j['large_cover_image'] ?? '',
     background: j['background_image_original'] ?? j['background_image'],
     screenshot1: j['large_screenshot_image1'],
     screenshot2: j['large_screenshot_image2'],

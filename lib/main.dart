@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:movie_app/screens/auth_screen/forget_password_screen.dart';
 import 'package:movie_app/screens/auth_screen/login_screen.dart';
 import 'package:movie_app/screens/auth_screen/register_screen.dart';
@@ -15,10 +17,16 @@ import 'package:movie_app/screens/into_screen/onboarding_screen/onboarding_5.dar
 import 'package:movie_app/screens/movie_details/movie_details_screen.dart';
 import 'bootstrap.dart';
 import 'core/theme/theme.dart';
+import 'data/models/list_entry.dart';
 
 void main () async{
   WidgetsFlutterBinding.ensureInitialized();
 await bootstrapFirebase();
+  await Hive.initFlutter();
+  Hive.registerAdapter(ListEntryAdapter());
+  // افتح بوكسين للكاش
+  await Hive.openBox<ListEntry>('wishlistBox');
+  await Hive.openBox<ListEntry>('historyBox');
 runApp(const MyApp());
 }
 
