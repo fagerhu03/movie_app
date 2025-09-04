@@ -18,8 +18,7 @@ Users can register/login (email + Google), explore movies from the [YTS API](htt
 
 ## 🎥 Demo
 
-![Demo GIF](screenshots/demo.gif)  
-*(record a short demo using [ScreenToGif](https://www.screentogif.com/) or Android Studio emulator recorder)*
+[[Watch the demo]](https://github.com/fagerhu03/movie_app/blob/master/assets/screenshot/movie_app_demo.mkv)
 
 ---
 ## 🚀 Features
