@@ -11,7 +11,6 @@ class ApiUser {
     this.avatar,
   });
 
-  // TODO: لو الـ Postman بيحط البيانات تحت key مختلف عدّليها هنا
   factory ApiUser.fromJson(Map<String, dynamic> j) => ApiUser(
     id: (j['id'] ?? '').toString(),
     name: j['name'] ?? '',
@@ -21,8 +20,8 @@ class ApiUser {
 }
 
 class ApiAuthResponse {
-  final String accessToken;      // ممكن تبقى token أو access_token
-  final String? refreshToken;    // لو عندكم refresh
+  final String accessToken;
+  final String? refreshToken;
   final ApiUser user;
 
   ApiAuthResponse({
@@ -31,11 +30,9 @@ class ApiAuthResponse {
     this.refreshToken,
   });
 
-  // TODO: ظبّطي المفاتيح حسب الدوكيومنتيشن
   factory ApiAuthResponse.fromJson(Map<String, dynamic> j) => ApiAuthResponse(
     accessToken: j['token'] ?? j['access_token'] ?? '',
     refreshToken: j['refresh_token'],
-    // بعض الـ APIs بترجع user تحت 'user' أو 'data'
     user: ApiUser.fromJson(j['user'] ?? j['data'] ?? <String, dynamic>{}),
   );
 }

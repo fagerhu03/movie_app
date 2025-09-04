@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive/hive.dart';
@@ -21,10 +22,10 @@ import 'data/models/list_entry.dart';
 
 void main () async{
   WidgetsFlutterBinding.ensureInitialized();
-await bootstrapFirebase();
+  await Firebase.initializeApp();
+  await bootstrapFirebase();
   await Hive.initFlutter();
   Hive.registerAdapter(ListEntryAdapter());
-  // افتح بوكسين للكاش
   await Hive.openBox<ListEntry>('wishlistBox');
   await Hive.openBox<ListEntry>('historyBox');
 runApp(const MyApp());

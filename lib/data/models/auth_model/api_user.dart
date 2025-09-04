@@ -3,7 +3,7 @@ class ApiUser {
   final String name;
   final String email;
   final String? phone;
-  final int? avatarId; // spelling في الـ JSON avaterId
+  final int? avatarId;
 
   ApiUser({
     required this.id,

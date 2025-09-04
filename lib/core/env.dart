@@ -1,3 +1,3 @@
 class Env {
-  static const baseUrl = 'https://route-movie-apis.vercel.app/'; // from Postman "Base URL"
+  static const baseUrl = 'https://route-movie-apis.vercel.app/';
 }

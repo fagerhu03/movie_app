@@ -1,4 +1,4 @@
-// lib/models/register_model.dart
+
 import 'dart:convert';
 
 class RegisterModel {
@@ -18,7 +18,7 @@ class RegisterModel {
     required this.avatarSeed,
   });
 
-  // ---- validation ----
+
   bool get isValidName => name.trim().isNotEmpty;
   bool get isValidEmail =>
       RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
@@ -27,11 +27,11 @@ class RegisterModel {
   bool get isValidPhone =>
       phone.isEmpty || RegExp(r'^\+?[0-9]{7,15}$').hasMatch(phone);
 
-  // ---- serialization ----
+
   Map<String, dynamic> toMap() => {
     'name': name,
     'email': email,
-    'password': password, // ⚠️ don’t store plain text in Firestore!
+    'password': password,
     'confirmPassword': confirmPassword,
     'phone': phone,
     'avatarSeed': avatarSeed,
@@ -50,7 +50,7 @@ class RegisterModel {
   factory RegisterModel.fromJson(String source) =>
       RegisterModel.fromMap(json.decode(source));
 
-  // ---- copy ----
+
   RegisterModel copyWith({
     String? name,
     String? email,

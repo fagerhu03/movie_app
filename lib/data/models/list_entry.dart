@@ -1,9 +1,8 @@
-// lib/data/models/list_entry.dart
 import 'package:hive/hive.dart';
 
 part 'list_entry.g.dart';
 
-@HiveType(typeId: 11) // اختاري رقم فريد وما يتكرر
+@HiveType(typeId: 11)
 class ListEntry {
   @HiveField(0)
   final int movieId;

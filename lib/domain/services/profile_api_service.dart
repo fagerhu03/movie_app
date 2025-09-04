@@ -1,6 +1,4 @@
-// lib/domain/services/profile_api_service.dart
 import 'package:dio/dio.dart';
-
 import '../../data/local/local_collections.dart';
 import '../../data/network/api_client.dart';
 import '../../data/models/user_profile.dart';
@@ -14,7 +12,6 @@ class ProfileApiService {
       : _client = client ?? ApiClient(),
         _local = local ?? LocalCollections();
 
-  // Adjust these to your backend if needed
   static const String kGetProfilePath   = '/profile';
   static const String kUpdateProfilePath= '/profile';
   static const String kDeleteAccountPath= '/profile';
@@ -23,7 +20,6 @@ class ProfileApiService {
   static const String kWishRemovePath   = '/wishlist';
   static const String kHistoryPath      = '/history';
 
-  // -------- Helpers --------
   Map<String, dynamic> _unwrapObj(dynamic d) {
     if (d is Map && d['data'] is Map) return d['data'] as Map<String, dynamic>;
     return (d as Map<String, dynamic>);
@@ -43,7 +39,6 @@ class ProfileApiService {
     throw Exception(e.message ?? fallback);
   }
 
-  // -------- API --------
   Future<UserProfile> me() async {
     try {
       final res = await _client.dio.get(kGetProfilePath);
@@ -57,7 +52,7 @@ class ProfileApiService {
   Future<UserProfile> update({
     required String name,
     required String phone,
-    required int avaterId, // 1-based index expected by backend
+    required int avaterId,
   }) async {
     try {
       final res = await _client.dio.patch(
@@ -71,12 +66,9 @@ class ProfileApiService {
     }
   }
 
-  /// Deletes the account on the server, then clears local caches.
-  /// (Token cleanup/navigation is handled by the caller via AuthApiService.logout.)
   Future<void> deleteAccount() async {
     try {
       await _client.dio.delete(kDeleteAccountPath);
-      // Clear local Hive caches so UI updates immediately
       await _local.replaceWish(const <ListEntry>[]);
       await _local.replaceHistory(const <ListEntry>[]);
     } on DioException catch (e) {
@@ -93,7 +85,6 @@ class ProfileApiService {
       await _local.replaceWish(list);
       return list;
     } on DioException catch (_) {
-      // Fallback to local cache if remote fails
       return _local.getWish();
     }
   }
@@ -107,22 +98,17 @@ class ProfileApiService {
       await _local.replaceHistory(list);
       return list;
     } on DioException catch (_) {
-      // Fallback to local cache if remote fails
       return _local.getHistory();
     }
   }
 
   Future<void> addToWish(ListEntry e) async {
-    // Server first
     await _client.dio.post(kWishAddPath, data: {'movieId': e.movieId});
-    // Then local cache
     await _local.addWish(e);
   }
 
   Future<void> removeFromWish(int movieId) async {
-    // Server first
     await _client.dio.delete('$kWishRemovePath/$movieId');
-    // Then local cache
     await _local.removeWish(movieId);
   }
 }

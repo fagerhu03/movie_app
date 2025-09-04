@@ -3,7 +3,7 @@ class UserProfile {
   final String name;
   final String email;
   final String phone;
-  final int avaterId;      // (نفس تهجئة الـ API)
+  final int avaterId;
   final int wishCount;
   final int historyCount;
 

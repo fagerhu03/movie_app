@@ -14,7 +14,7 @@ class AuthApiService {
     : _client = client ?? ApiClient(),
       _tokens = tokens ?? TokenStorage();
 
-  /// -------- REGISTER --------
+  ///register
   Future<ApiRegisterResponse> register(RegisterModel data, {required int avaterId}) async {
     try {
       final res = await _client.dio.post('/auth/register', data: {
@@ -36,7 +36,7 @@ class AuthApiService {
     }
   }
 
-  /// -------- LOGIN --------
+  ///login
   Future<ApiLoginResponse> login(SignInModel data) async {
     try {
       final res = await _client.dio.post('/auth/login', data: {
@@ -44,7 +44,7 @@ class AuthApiService {
         'password': data.password,
       });
       final parsed = ApiLoginResponse.fromJson(res.data as Map<String, dynamic>);
-      await _tokens.saveAccess(parsed.token); // مهم!
+      await _tokens.saveAccess(parsed.token);
       return parsed;
     } on DioException catch (e) {
       // ignore: avoid_print
@@ -53,16 +53,14 @@ class AuthApiService {
     }
   }
 
-  /// -------- FORGETPASSWORD --------
+  /// forgotPassword
   Future<String> forgotPassword(String email) async {
     try {
       final res = await _client.dio.post(
-        // TODO: if your doc uses a different path, change it here
         '/auth/reset-password',
         data: {'email': email},
       );
 
-      // Normalize message (sometimes it's string, sometimes list)
       final data = res.data;
       final msg = (data is Map && data['message'] != null)
           ? (data['message'] is List
@@ -71,9 +69,7 @@ class AuthApiService {
           : 'Reset link sent';
       return msg;
     } on DioException catch (e) {
-      // ignore: avoid_print
       print('FORGOT ERROR BODY: ${e.response?.data}');
-      // Reuse your _errMsg if you want; simple inline version below:
       final d = e.response?.data;
       if (d is Map && d['message'] != null) {
         final m = d['message'];
@@ -82,21 +78,12 @@ class AuthApiService {
       throw Exception(e.message ?? 'Request failed');
     }
   }
-
   Future<void> logout() async {
-    // If the API has /auth/logout you can call it here before clearing
     await _tokens.clear();
   }
-
-  /// Extracts a clean message from DioException response
   String _errMsg(DioException e) {
     final d = e.response?.data;
-
-    // Common shapes:
-    // { "message": "..." }
     if (d is Map && d['message'] is String) return d['message'] as String;
-
-    // { "errors": ["a","b"] } or { "errors": {"email":["..."]} }
     if (d is Map && d['errors'] != null) {
       final errs = d['errors'];
       if (errs is List && errs.isNotEmpty) return errs.first.toString();

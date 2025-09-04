@@ -10,7 +10,6 @@ class FirebaseAuthService {
   Stream<User?> get authChanges => _auth.authStateChanges();
   User? get currentUser => _auth.currentUser;
 
-  /// Optional: check if an email already has a sign-in method
   Future<bool> checkEmailExists(String email) async {
     final methods = await _auth.fetchSignInMethodsForEmail(email);
     return methods.isNotEmpty;
@@ -31,7 +30,6 @@ class FirebaseAuthService {
     final cred = await _auth.signInWithProvider(google)
         .timeout(const Duration(seconds: 30));
     final user = cred.user!;
-    // Create/update profile doc
     await _db.collection('users').doc(user.uid).set({
       'uid': user.uid,
       'name': user.displayName ?? '',
@@ -42,23 +40,16 @@ class FirebaseAuthService {
     }, SetOptions(merge: true));
     return user.uid;
   }
-
   Future<String> register(RegisterModel data) async {
-    // 1) Create account (this signs the user in)
     final cred = await _auth
         .createUserWithEmailAndPassword(
       email: data.email.trim(),
       password: data.password,
     )
         .timeout(const Duration(seconds: 30));
-
     final user = cred.user!;
-
-    // 2) Set displayName and refresh local user
     await user.updateDisplayName(data.name);
     await user.reload();
-
-    // 3) Save/merge profile in Firestore
     await _db.collection('users').doc(user.uid).set({
       'uid': user.uid,
       'name': data.name,
