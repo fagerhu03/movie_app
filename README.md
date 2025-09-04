@@ -1,18 +1,19 @@
 <p align="center">
-  <img src="assets\screenshot\img.png" alt="Movie_App Logo" width="120"/>
+  <img src="assets/screenshot/img.png" alt="Movie_App Logo" width="120"/>
 </p>
 
 # 🎬 Movie App (Flutter)
 
 A modern **Movie Discovery App** built with **Flutter**.  
-Users can register/login (email + Google), explore movies from the [YTS API](https://yts.mx/api), save **Wish List** & **History** locally using Hive, and manage their profile with avatars.
+Users can register/login (email + Google via **Firebase**), explore movies from the [YTS API](https://yts.mx/api), save **Wish List** & **History** locally using **Hive**, and manage their profile with **random avatars**.
 
 ---
+
 ## 📸 Screenshots
 
-| Login | Register |Introduc| Home | Search | Libirary | Profile | Update |
-|--------|-------|----------|------|---------|---------|---------|---------|
-| ![Login](assets/screenshot/login_screenshot.png) | ![Register](assets/screenshot/reg_screenshot.png) | ![Introduction](assets/screenshot/inrto_screenshot.png) | ![Home](assets/screenshot/home_screenshot.png) |![Search](assets/screenshot/search_screenshot.png) |![Libirary](assets/screenshot/library_screenshot.png) |![Profile](assets/screenshot/profile_screnshot.png) |![Update](assets/screenshot/update_screenshot.png) |
+| Login | Register | Introduc | Home | Search | Libirary | Profile | Update |
+|--------|----------|----------|------|---------|----------|---------|--------|
+| ![Login](assets/screenshot/login_screenshot.png) | ![Register](assets/screenshot/reg_screenshot.png) | ![Introduction](assets/screenshot/inrto_screenshot.png) | ![Home](assets/screenshot/home_screenshot.png) | ![Search](assets/screenshot/search_screenshot.png) | ![Libirary](assets/screenshot/library_screenshot.png) | ![Profile](assets/screenshot/profile_screnshot.png) | ![Update](assets/screenshot/update_screenshot.png) |
 
 ---
 
@@ -21,22 +22,23 @@ Users can register/login (email + Google), explore movies from the [YTS API](htt
 [[Watch the demo]](https://github.com/fagerhu03/movie_app/blob/master/assets/screenshot/movie_app_demo.mkv)
 
 ---
+
 ## 🚀 Features
 
 - 🔐 **Authentication**
   - Email & Password (via backend API)
-  - Google Sign-In (via Firebase)
+  - Google Sign-In (**Firebase Auth**)
   - Password reset (API + Firebase email)
 - 👤 **Profile**
-  - Update name, phone, avatar (with `random_avatar`)
+  - Update name, phone, avatar (with **random_avatar** package)
   - Delete account (API)
-  - Persist profile data locally
+  - Persist profile data locally with **Hive**
 - 🎥 **Movies**
   - Browse movies from [YTS API](https://yts.mx/api)
   - Movie details: screenshots, cast, genres, torrents
   - Play trailers with `youtube_player_flutter`
 - ⭐ **Lists**
-  - Wish List & History synced with **Hive** (offline storage)
+  - Wish List & History stored locally in **Hive**
   - Auto-sync with remote API when available
 - 🖼️ **UI/UX**
   - Custom **Splash Screen** (`flutter_native_splash`)
@@ -51,12 +53,12 @@ Users can register/login (email + Google), explore movies from the [YTS API](htt
 ## 🛠️ Tech Stack
 
 - **Framework**: Flutter (Dart)
-- **State Mgmt**: `StatefulWidget` + minimal controllers
-- **Storage**: Hive (local persistence)
 - **Auth**: Firebase Auth + Google Sign-In
-- **API Client**: Dio
+- **Local DB**: Hive
+- **Avatar**: random_avatar
+- **Networking**: Dio
 - **Media**: youtube_player_flutter
-- **UI Utilities**: flutter_screenutil, random_avatar
+- **UI Utilities**: flutter_screenutil, carousel_slider
 - **Splash & Icons**: flutter_native_splash, flutter_launcher_icons
 
 ---
@@ -67,7 +69,7 @@ Users can register/login (email + Google), explore movies from the [YTS API](htt
 lib/
 ├── core/
 │   ├── env.dart
-│   ├── theme/            # THem color for the app 
+│   ├── theme/            # Theme color for the app 
 │
 ├── data/
 │   ├── avatar_seeds.dart
@@ -83,12 +85,12 @@ lib/
 │   ├── auth_screen/      # Login, Register, Forgot Password
 │   ├── home_screen/      # Tabs: Home, Search, Library, Profile
 │   ├── movie_details/    # MovieDetailsScreen
-│   ├── intro_screen/     # introducyion screen withe the onboarding too 
+│   ├── intro_screen/     # Introduction screen with onboarding
 │   └── profile/          # UpdateProfileScreen
 │
 └── main.dart             # App entrypoint
-└── fairebase_options.dart             
-└── bootstrap.dart          
+└── firebase_options.dart
+└── bootstrap.dart                  
 ```
 
 ---
