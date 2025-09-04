@@ -17,7 +17,6 @@ class _LibraryTabState extends State<LibraryTab> {
   final _api = YtsApiService();
   final _scroll = ScrollController();
 
-  // Available genres (YTS doesn’t expose a “list all” endpoint)
   final _genres = const <String>[
     'Action','Adventure','Animation','Biography','Comedy','Crime','Documentary',
     'Drama','Family','Fantasy','History','Horror','Music','Mystery','Romance',
@@ -25,8 +24,6 @@ class _LibraryTabState extends State<LibraryTab> {
   ];
 
   String _selected = 'Action';
-
-  // paging
   int _page = 1;
   bool _loading = false;
   bool _canLoadMore = false;
@@ -91,7 +88,6 @@ class _LibraryTabState extends State<LibraryTab> {
 
     return Column(
       children: [
-        // --- Genres row ---
         SizedBox(
           height: 62.h,
           child: ListView.separated(
@@ -129,8 +125,6 @@ class _LibraryTabState extends State<LibraryTab> {
             },
           ),
         ),
-
-        // --- Grid ---
         Expanded(
           child: Builder(
             builder: (_) {
@@ -172,20 +166,6 @@ class _LibraryTabState extends State<LibraryTab> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     final m = _items[i];
-
-                    // Use your PosterCard if you prefer:
-                    // return PosterCard(
-                    //   title: '',
-                    //   vote: m.rating,
-                    //   imageUrl: m.mediumCover,
-                    //   onTap: () => Navigator.pushNamed(
-                    //     context,
-                    //     MovieDetailsScreen.routeName,
-                    //     arguments: m.id,
-                    //   ),
-                    // );
-
-                    // Lightweight tile that matches the screenshot
                     return _PosterTile(
                       imageUrl: m.mediumCover,
                       rating: m.rating,
@@ -205,8 +185,6 @@ class _LibraryTabState extends State<LibraryTab> {
     );
   }
 }
-
-/// Small poster widget with the yellow rating chip (screenshot style)
 class _PosterTile extends StatelessWidget {
   final String imageUrl;
   final double rating;
@@ -243,7 +221,6 @@ class _PosterTile extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    // keep space for star; replaced below dynamically
                   ],
                 ),
               ),

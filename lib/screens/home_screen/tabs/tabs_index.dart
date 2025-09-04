@@ -38,7 +38,6 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
     setState(() { _loading = true; _error = null; });
     try {
       final me = await _api.me();
-      // If backend doesn't return counts, compute from lists
       final wish = await _api.wishList();
       final hist = await _api.history();
       if (!mounted) return;
@@ -81,7 +80,6 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
       color: bg,
       child: Column(
         children: [
-          // ===== HEADER =====
           Padding(
             padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 8.h),
             child: Container(
@@ -90,13 +88,12 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // RandomAvatar from stored avaterId
                   CircleAvatar(
                     radius: 32.r,
                     backgroundColor: Colors.black,
                     child: ClipOval(
                       child: RandomAvatar(
-                        avatarSeedFor(me.avaterId), // <- seed from our shared list
+                        avatarSeedFor(me.avaterId),
                         width: 60.w,
                         height: 60.w,
                       ),
@@ -131,7 +128,6 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
             ),
           ),
 
-          // ===== ACTIONS =====
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: Row(
@@ -180,7 +176,6 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
           ),
           SizedBox(height: 10.h),
 
-          // ===== TABS =====
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: TabBar(
@@ -196,7 +191,6 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
           ),
           SizedBox(height: 8.h),
 
-          // ===== CONTENT =====
           Expanded(
             child: TabBarView(
               controller: _tabs,

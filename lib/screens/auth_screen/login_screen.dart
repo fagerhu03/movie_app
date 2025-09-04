@@ -105,8 +105,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) setState(() => _googleLoading = false);
     }
   }
-
-  // -------- Email/password via your API ----------
   Future<void> _loginWithEmail() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -117,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
       );
-      await auth.login(model); // stores token locally via TokenStorage
+      await auth.login(model);
       if (!mounted) return;
       _toast('Welcome back!');
       Navigator.pushReplacementNamed(context, HomeScreen.routeName);
@@ -215,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Login Button (API)
+                  // Login Button
                   SizedBox(
                     width: double.infinity,
                     height: 56.h,
@@ -291,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Google Login (Firebase)
+                  // Google Login
                   SizedBox(
                     width: double.infinity,
                     height: 56.h,

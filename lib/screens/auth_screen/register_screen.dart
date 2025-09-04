@@ -276,7 +276,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         final auth = AuthApiService();
                         setState(() => _loading = true);
                         try {
-                          // API requires `avaterId` (note spelling)
                           final avaterId = _currentAvatar + 1;
 
                           final ApiRegisterResponse res =
@@ -285,7 +284,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (!mounted) return;
                           _toast(context,
                               res.message.isNotEmpty ? res.message : 'Account created!');
-                          // Register returns no token → go to Login
                           Navigator.of(context).pushNamedAndRemoveUntil(
                             LoginScreen.routeName,
                                 (r) => false,

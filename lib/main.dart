@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       designSize: const Size(430, 932),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: IntroScreen.routeName,
+        initialRoute: HomeScreen.routeName,
         routes: {
           //intro
           IntroScreen.routeName: (_) => IntroScreen(),

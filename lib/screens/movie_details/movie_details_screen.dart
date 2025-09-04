@@ -93,7 +93,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () => Navigator.pop(context),
                 ),
-                // REACTIVE bookmark (NEW)
                 actions: [
                   ValueListenableBuilder(
                     valueListenable: _wishBox.listenable(),
@@ -418,8 +417,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       },
     );
   }
-
-  // helpers
   Widget _sectionTitle(String s) =>
       Text(s, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700));
 
@@ -457,7 +454,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     }
 
     if (d.torrents.isNotEmpty) {
-      // ignore: use_build_context_synchronously
       showModalBottomSheet(
         context: context,
         backgroundColor: const Color(0xFF1E1E1E),

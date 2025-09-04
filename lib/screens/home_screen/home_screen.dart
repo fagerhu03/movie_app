@@ -1,4 +1,3 @@
-// lib/screens/home_screen/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -32,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       path,
       width: 28,
       height: 28,
-      color: color, // tint PNG
+      color: color,
       colorBlendMode: BlendMode.srcIn,
       filterQuality: FilterQuality.high,
     );

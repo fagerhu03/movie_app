@@ -104,7 +104,7 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
                     child: Image.network(
                       _bgPrev!,
                       fit: BoxFit.cover,
-                      gaplessPlayback: true, // don't flicker
+                      gaplessPlayback: true,
                     ),
                   ),
 
@@ -215,7 +215,11 @@ class _HomeTabState extends State<HomeTab> with TickerProviderStateMixin {
             child: SizedBox(
               height: 230.h,
               child: FutureBuilder<List<YtsMovie>>(
-                future: _genreFutures[genre], // <-- cached future
+                future: _genreFutures[genre],
+
+
+
+
                 builder: (_, snap) {
                   if (snap.connectionState != ConnectionState.done) {
                     return const Center(child: CircularProgressIndicator());

@@ -219,7 +219,7 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
           ),
           SizedBox(height: 10.h),
 
-          // ===== TABS =====
+          // tab
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             child: TabBar(
@@ -267,7 +267,7 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
           label,
           style: TextStyle(
             color: Colors.white70,
-            fontSize: fontSize != null ? fontSize * 0.75 : 12, // Adjust label font size proportionally
+            fontSize: fontSize != null ? fontSize * 0.75 : 12,
             fontFamily: 'Inter',
           ),
         ),

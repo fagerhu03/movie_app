@@ -1,4 +1,3 @@
-// lib/screens/home_screen/widgets/hero_carousel.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,11 +20,9 @@ class HeroCarousel extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // خلفية كبيرة
         Image.network(backgroundImage, fit: BoxFit.cover),
         Container(color: Colors.black.withOpacity(.45)),
 
-        // تراكب: سطر "Available Now" + سلايدر + "Watch Now"
         Padding(
           padding: EdgeInsets.only(left: 12.w, right: 0, top: 32.h, bottom: 16.h),
           child: Column(
@@ -40,7 +37,6 @@ class HeroCarousel extends StatelessWidget {
                   )),
               SizedBox(height: 12.h),
 
-              // سلايدر أفقي للبوسترات الكبيرة
               SizedBox(
                 height: 200.h,
                 child: ListView.separated(

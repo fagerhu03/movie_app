@@ -5,8 +5,8 @@ import 'package:random_avatar/random_avatar.dart';
 import '../../data/avatar_seeds.dart';
 import '../../data/models/user_profile.dart';
 import '../../domain/services/profile_api_service.dart';
-import '../../domain/services/auth_api_service.dart';     // <-- add
-import '../auth_screen/login_screen.dart';                // <-- add
+import '../../domain/services/auth_api_service.dart';
+import '../auth_screen/login_screen.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key, required this.me});
@@ -25,7 +25,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   late final TextEditingController _phone;
   late int _avatarId;
   bool _saving = false;
-  bool _deleting = false; // <-- NEW
+  bool _deleting = false;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         avaterId: _avatarId,
       );
       if (!mounted) return;
-      Navigator.pop(context, true); // tell caller we changed something
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -98,12 +98,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Future<void> _deleteAccount() async {
     setState(() => _deleting = true);
     try {
-      // 1) delete on server (also clears Hive caches in the service)
       await _api.deleteAccount();
-      // 2) clear auth token locally
       await AuthApiService().logout();
       if (!mounted) return;
-      // 3) go to login screen fresh
       Navigator.of(context).pushNamedAndRemoveUntil(
         LoginScreen.routeName,
             (r) => false,

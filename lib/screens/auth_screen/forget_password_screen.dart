@@ -7,8 +7,6 @@ class ForgotPasswordScreen extends StatefulWidget {
    const ForgotPasswordScreen({super.key, this.onVerify});
 
   static const routeName = 'Forgotpassword';
-  /// If you want to hook Firebase later, pass a callback:
-  /// onVerify?.call(email)
   final void Function(String email)? onVerify;
 
   @override
@@ -68,7 +66,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             key: _formKey,
             child: Column(
               children: [
-                // Illustration
                 Image.asset(
                   'assets/images/forgotpassword.png',
                   height: 430.h,
@@ -108,7 +105,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         final msg = await auth.forgotPassword(_emailCtrl.text.trim());
                         if (!mounted) return;
                         _toast(context, msg.isNotEmpty ? msg : 'If this email exists, a reset link was sent.');
-                        Navigator.pop(context); // back to Login
+                        Navigator.pop(context);
                       } catch (e) {
                         if (!mounted) return;
                         _toast(context, e.toString());

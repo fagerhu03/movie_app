@@ -60,7 +60,7 @@ class IntroScreen extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFC107), // yellow
+                          backgroundColor: const Color(0xFFFFC107),
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.r),
